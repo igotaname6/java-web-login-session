@@ -15,6 +15,11 @@ public class Session {
         this.id = UUID;
     }
 
+    public Session(User user){
+        createNewSessionUUID();
+        this.user = user;
+    }
+
     public String getId() {
         return id;
     }

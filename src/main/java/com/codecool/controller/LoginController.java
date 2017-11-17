@@ -1,10 +1,12 @@
 package com.codecool.controller;
 
-import com.codecool.controller.mime.MimeTypeResolver;
+import com.codecool.controller.mime.SessionController;
+import com.codecool.model.Session;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import java.io.*;
+import java.net.HttpCookie;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.HashMap;
@@ -21,11 +23,18 @@ public class LoginController implements HttpHandler{
             sendStaticHome(httpExchange);
 
         } else if(method.equals("POST") && cookieStr == null){
+            HttpCookie cookie;
+
             InputStreamReader isr = new InputStreamReader(httpExchange.getRequestBody(), "utf-8");
             BufferedReader br = new BufferedReader(isr);
             String formData = br.readLine();
 
             Map<String, String> formDataMap = parseFormData(formData);
+            String sessionId = SessionController.setNewSession(formDataMap);
+            System.out.println("sessionId: " + sessionId);
+            cookie = new HttpCookie("sessionId", sessionId);
+            httpExchange.getResponseHeaders().add("Set-Cookie", cookie.toString());
+            sendStaticHome(httpExchange);
         }
 
 
@@ -37,7 +46,7 @@ public class LoginController implements HttpHandler{
         URL fileURL = classLoader.getResource(path);
 
         OutputStream os = httpExchange.getResponseBody();
-        StaticController.sendFile(httpExchange, fileURL);s
+        StaticController.sendFile(httpExchange, fileURL);
     }
 
     private Map<String, String> parseFormData(String formData) throws UnsupportedEncodingException {
