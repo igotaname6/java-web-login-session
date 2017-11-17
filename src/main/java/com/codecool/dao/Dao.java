@@ -7,7 +7,7 @@ import java.sql.*;
 
 public class Dao {
 
-    private static final String URL = "jdbc:sqlite:resources.db.usersDb.db";
+    private static final String URL = "jdbc:sqlite:src/main/resources/db/usersDb.db";
     private static final String DRIVER_CLASS_NAME = "org.sqlite.JDBC";
 
     private Connection connection;
@@ -77,6 +77,12 @@ public class Dao {
             String message = "Cannot execute insert statement";
             throw new DaoException(message, e);
         }
+    }
+
+    public void addSessionAndUser(Session session) throws DaoException{
+        User user = session.getUser();
+        addUser(user);
+        addSession(session);
     }
 }
 

@@ -48,7 +48,7 @@ resources.db.usersDb
 
 # IntelliJ
 out/
-
+*.db
 # mpeltonen/sbt-idea plugin
 .idea_modules/
 

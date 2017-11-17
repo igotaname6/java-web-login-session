@@ -1,5 +1,5 @@
 CREATE TABLE sessions(
   id TEXT PRIMARY KEY,
-  user_ud TEXT,
-    FOREIGN KEY(user_ud) REFERENCES users(id)
+  user_id TEXT,
+    FOREIGN KEY(user_id) REFERENCES users(id)
 )

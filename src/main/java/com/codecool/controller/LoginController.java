@@ -30,7 +30,10 @@ public class LoginController implements HttpHandler{
             String formData = br.readLine();
 
             Map<String, String> formDataMap = parseFormData(formData);
-            String sessionId = SessionController.setNewSession(formDataMap);
+
+            SessionController sessionController =  new SessionController();
+
+            String sessionId = sessionController.setNewSession(formDataMap);
             System.out.println("sessionId: " + sessionId);
             cookie = new HttpCookie("sessionId", sessionId);
             httpExchange.getResponseHeaders().add("Set-Cookie", cookie.toString());
