@@ -37,7 +37,7 @@ buildNumber.properties
 *iml
 # CMake
 cmake-build-debug/
-
+resources.db.usersDb
 # Mongo Explorer plugin:
 .idea/**/mongoSettings.xml
 
