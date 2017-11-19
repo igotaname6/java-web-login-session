@@ -59,7 +59,7 @@ public class Dao {
             User user = new User(id, rs.getString("user_name"), rs.getString("password"));
             return user;
         } catch (SQLException e) {
-            String message = "Cannot execute insert statement";
+            String message = "Cannot execute select statement";
             throw new DaoException(message, e);
         }
     }
@@ -83,6 +83,44 @@ public class Dao {
         User user = session.getUser();
         addUser(user);
         addSession(session);
+    }
+
+    public int deleteSession(String id) throws DaoException {
+        String query = "DELETE FROM sessions WHERE id = ?";
+
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, id);
+            return preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            String message = "Cannot execute session delete";
+            throw new DaoException(message, e);
+        }
+    }
+
+    public User getUserBySession(String sessionId) throws DaoException {
+        String query = "SELECT user_name, password FROM  users " +
+                "JOIN sessions ON users.id = sessions.user_id " +
+                "WHERE sessions.id = ?";
+
+        try {
+
+            PreparedStatement preStatement = connection.prepareStatement(query);
+            preStatement.setString(1, sessionId);
+            ResultSet resultSet = preStatement.executeQuery();
+
+            if(resultSet.next()){
+                String userName = resultSet.getString("user_name");
+                String password = resultSet.getString("password");
+                return new User(userName, password);
+            } else {
+                return null;
+            }
+
+        } catch (SQLException e) {
+            String message =  "Cannot execute query";
+            throw new DaoException(message, e);
+        }
     }
 }
 

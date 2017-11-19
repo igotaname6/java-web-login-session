@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>main web</title>
+    <link rel="stylesheet" href="/static/assets/main.css">
+</head>
+<body>
+    <div class="center">
+        <!--/*@thymesVar id="user" type="com.codecool.model.User"*/-->
+        <p class="center" th:text="'Hello' + ${user.getUserName()}">
+            Hello janKowalski.
+        </p>
+        <br>
+        <input type="submit" name="logout" value="logout">
+    </div>
+
+</body>
+</html>

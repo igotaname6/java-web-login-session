@@ -2,6 +2,7 @@ package com.codecool;
 
 import com.codecool.controller.LoginController;
 import com.codecool.controller.StaticController;
+import com.codecool.dao.DaoException;
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
@@ -13,7 +14,7 @@ import java.net.InetSocketAddress;
  */
 public class App 
 {
-    public static void main( String[] args ) throws IOException {
+    public static void main( String[] args ) throws IOException, DaoException {
 
         HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
 

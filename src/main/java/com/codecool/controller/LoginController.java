@@ -1,7 +1,10 @@
 package com.codecool.controller;
 
 import com.codecool.controller.mime.SessionController;
-import com.codecool.model.Session;
+import com.codecool.dao.Dao;
+import com.codecool.dao.DaoException;
+import com.codecool.model.User;
+import com.codecool.view.CustomTemplateEngine;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
@@ -13,6 +16,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LoginController implements HttpHandler{
+    private final CustomTemplateEngine customTemplateEngine;
+    private final Dao dao;
+
+    public LoginController() throws DaoException {
+        customTemplateEngine = new CustomTemplateEngine();
+        dao = new Dao();
+    }
+
     public void handle(HttpExchange httpExchange) throws IOException {
 
         String method = httpExchange.getRequestMethod();
@@ -37,10 +48,14 @@ public class LoginController implements HttpHandler{
             System.out.println("sessionId: " + sessionId);
             cookie = new HttpCookie("sessionId", sessionId);
             httpExchange.getResponseHeaders().add("Set-Cookie", cookie.toString());
-            sendStaticHome(httpExchange);
+
+            try {
+                processWebFromTemplate(sessionId, httpExchange);
+            } catch (DaoException e) {
+                e.printStackTrace();
+            }
+
         }
-
-
     }
 
     private void sendStaticHome(HttpExchange httpExchange) throws IOException {
@@ -48,12 +63,11 @@ public class LoginController implements HttpHandler{
         ClassLoader classLoader = getClass().getClassLoader();
         URL fileURL = classLoader.getResource(path);
 
-        OutputStream os = httpExchange.getResponseBody();
         StaticController.sendFile(httpExchange, fileURL);
     }
 
     private Map<String, String> parseFormData(String formData) throws UnsupportedEncodingException {
-        Map<String, String> parsedForm = new HashMap<String, String>();
+        Map<String, String> parsedForm = new HashMap<>();
         String[] pairs = formData.split("&");
 
         for(String pair: pairs){
@@ -64,5 +78,16 @@ public class LoginController implements HttpHandler{
             parsedForm.put(singleSplitedPair[0], singleSplitedPair[1]);
         }
         return parsedForm;
+    }
+
+    private void processWebFromTemplate(String sessionId, HttpExchange httpExchange) throws DaoException, IOException {
+        User user = dao.getUserBySession(sessionId);
+
+        String response = customTemplateEngine.createHtml(user);
+
+        httpExchange.sendResponseHeaders(200, response.getBytes().length);
+        OutputStream os = httpExchange.getResponseBody();
+        os.write(response.getBytes());
+        os.close();
     }
 }
