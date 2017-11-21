@@ -1,4 +1,4 @@
-package com.codecool.controller.mime;
+package com.codecool.controller;
 
 import com.codecool.dao.Dao;
 import com.codecool.dao.DaoException;

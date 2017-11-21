@@ -35,25 +35,27 @@ public class Dao {
         }
     }
 
-    public int addUser(User user) throws DaoException{
-        try {
-            PreparedStatement preStatement = connection.prepareStatement(
-                    "INSERT INTO users(id, user_name, password) VALUES(?,?,?)");
+    public void addUser(User user) throws DaoException{
+        String statement = "INSERT INTO users(id, user_name, password) VALUES(?,?,?);";
+        try(PreparedStatement preStatement = connection.prepareStatement(statement)){
+
             preStatement.setString(1, user.getId());
             preStatement.setString(2, user.getUserName());
             preStatement.setString(3, user.getPassword());
-            int results = preStatement.executeUpdate();
-            return results;
+            preStatement.executeUpdate();
+            preStatement.close();
 
         } catch (SQLException e) {
+            e.printStackTrace();
             String message = "Cannot execute insert statement";
             throw new DaoException(message, e);
         }
     }
 
     public User getUser(String id) throws DaoException{
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT user_name, password from users WHERE id = ?");
+        String statement = "SELECT user_name, password from users WHERE id = ?;";
+
+        try(PreparedStatement preparedStatement = connection.prepareStatement(statement)) {
             preparedStatement.setString(1, id);
             ResultSet rs = preparedStatement.executeQuery();
             User user = new User(id, rs.getString("user_name"), rs.getString("password"));
@@ -65,13 +67,14 @@ public class Dao {
     }
 
     public int addSession(Session session) throws DaoException {
-        try {
-            PreparedStatement preStatement = connection.prepareStatement(
-                    "INSERT INTO sessions(id, user_id) VALUES(?,?)");
+        String statement = "INSERT INTO sessions(id, user_id) VALUES(?,?);";
+        try(PreparedStatement preStatement = connection.prepareStatement(statement)) {
             preStatement.setString(1, session.getId());
             preStatement.setString(2, session.getUser().getId());
             int results = preStatement.executeUpdate();
+            preStatement.close();
             return results;
+
 
         } catch (SQLException e) {
             String message = "Cannot execute insert statement";
@@ -86,15 +89,34 @@ public class Dao {
     }
 
     public int deleteSession(String id) throws DaoException {
-        String query = "DELETE FROM sessions WHERE id = ?";
+        String statement = "DELETE FROM sessions WHERE id = ?;";
 
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
+        try(PreparedStatement preparedStatement = connection.prepareStatement(statement)) {
+
             preparedStatement.setString(1, id);
-            return preparedStatement.executeUpdate();
+            int result = preparedStatement.executeUpdate();
+            preparedStatement.close();
+            return result;
         } catch (SQLException e) {
             String message = "Cannot execute session delete";
             throw new DaoException(message, e);
+        }
+    }
+
+    public boolean IsSessionInDb(String sessionId) throws DaoException{
+        String query = "SELECT * FROM sessions WHERE id =?";
+
+        try(PreparedStatement preStatement = connection.prepareStatement(query);) {
+            preStatement.setString(1, sessionId);
+            ResultSet sessionStatus = preStatement.executeQuery();
+
+            boolean hasSession;
+            hasSession = sessionStatus.next();
+            preStatement.close();
+            return hasSession;
+
+        } catch (SQLException e) {
+            throw new DaoException("Cant connct", e);
         }
     }
 
@@ -103,9 +125,9 @@ public class Dao {
                 "JOIN sessions ON users.id = sessions.user_id " +
                 "WHERE sessions.id = ?";
 
-        try {
+        try(PreparedStatement preStatement = connection.prepareStatement(query);) {
 
-            PreparedStatement preStatement = connection.prepareStatement(query);
+//            PreparedStatement preStatement = connection.prepareStatement(query);
             preStatement.setString(1, sessionId);
             ResultSet resultSet = preStatement.executeQuery();
 
@@ -117,8 +139,9 @@ public class Dao {
                 return null;
             }
 
+
         } catch (SQLException e) {
-            String message =  "Cannot execute query";
+            String message = "Cannot execute query";
             throw new DaoException(message, e);
         }
     }

@@ -19,7 +19,7 @@ public class App
         HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
 
     // set routes
-        server.createContext("/", new LoginController());
+        server.createContext("/login", new LoginController());
         server.createContext("/static", new StaticController());
         server.createContext("/assets", new StaticController());
 

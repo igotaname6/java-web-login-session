@@ -3,16 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>main web</title>
-    <link rel="stylesheet" href="/static/assets/main.css">
+    <link rel="stylesheet" href="/static/assets/main.css" type="text/css">
 </head>
 <body>
     <div class="center">
         <!--/*@thymesVar id="user" type="com.codecool.model.User"*/-->
-        <p class="center" th:text="'Hello' + ${user.getUserName()}">
+        <p class="center" th:text="'Hello ' + ${user.getUserName()}">
             Hello janKowalski.
         </p>
         <br>
-        <input type="submit" name="logout" value="logout">
+        <form method="POST">
+            <input type="submit" name="logout" value="logout">
+        </form>
     </div>
 
 </body>

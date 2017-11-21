@@ -17,13 +17,11 @@ public class StaticController implements HttpHandler{
     public void handle(HttpExchange httpExchange) throws IOException {
         // get file path from url
         URI uri = httpExchange.getRequestURI();
-        System.out.println("looking for: " + uri.getPath());
         String path = "." + uri.getPath();
 
         // get file from resources folder, see: https://www.mkyong.com/java/java-read-a-file-from-resources-folder/
         ClassLoader classLoader = getClass().getClassLoader();
         URL fileURL = classLoader.getResource(path);
-
         OutputStream os = httpExchange.getResponseBody();
 
         if (fileURL == null) {
